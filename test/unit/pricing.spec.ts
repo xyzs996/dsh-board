@@ -20,7 +20,7 @@ describe('priceFor', () => {
   })
 
   it('off-peak is exactly half of peak (official scheme)', () => {
-    for (const model of ['deepseek-v4-pro', 'deepseek-v4-flash'] as const) {
+    for (const model of ['deepseek-v4-pro', 'deepseek-v4-flash', 'deepseek-v4-flash-vision-exp'] as const) {
       expect(OFF_PEAK_PRICES[model].cacheHitPerM).toBeCloseTo(PEAK_PRICES[model].cacheHitPerM / 2)
       expect(OFF_PEAK_PRICES[model].cacheMissPerM).toBeCloseTo(PEAK_PRICES[model].cacheMissPerM / 2)
       expect(OFF_PEAK_PRICES[model].outputPerM).toBeCloseTo(PEAK_PRICES[model].outputPerM / 2)
@@ -30,6 +30,15 @@ describe('priceFor', () => {
   it('unknown models follow the DEFAULT_MODEL rate of the same moment table', () => {
     expect(priceFor('some-unknown-model', BEFORE)).toEqual(MODEL_PRICES[DEFAULT_MODEL])
     expect(priceFor('some-unknown-model', AFTER_PEAK)).toEqual(PEAK_PRICES[DEFAULT_MODEL])
+  })
+
+  // Shipped 2026-08-21. Without its own rows it fell through to DEFAULT_MODEL
+  // (v4-pro), which is exactly 3x flash on all three numbers.
+  it('prices deepseek-v4-flash-vision-exp as flash, not as the v4-pro fallback', () => {
+    expect(priceFor('deepseek-v4-flash-vision-exp', AFTER_PEAK)).toEqual(PEAK_PRICES['deepseek-v4-flash'])
+    expect(priceFor('deepseek-v4-flash-vision-exp', AFTER_OFFPEAK)).toEqual(OFF_PEAK_PRICES['deepseek-v4-flash'])
+    expect(priceFor('deepseek-v4-flash-vision-exp', AFTER_PEAK)).not.toEqual(PEAK_PRICES[DEFAULT_MODEL])
+    expect(priceFor('deepseek-v4-flash-vision-exp', AFTER_OFFPEAK)).not.toEqual(OFF_PEAK_PRICES[DEFAULT_MODEL])
   })
 })
 
