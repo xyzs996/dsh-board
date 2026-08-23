@@ -2,7 +2,9 @@
  * Price tables — ¥ per 1M tokens, from the official price list
  * https://api-docs.deepseek.com/zh-cn/quick_start/pricing
  * (fetched 2026-08-15; re-checked 2026-08-17 — the page now lists the
- * peak/off-peak tables as the primary price list, numbers unchanged).
+ * peak/off-peak tables as the primary price list, numbers unchanged;
+ * re-checked 2026-08-23 — deepseek-v4-flash-vision-exp added, shipped
+ * 2026-08-21 and priced identically to deepseek-v4-flash).
  *
  * - MODEL_PRICES: standard prices, in force until the peak/off-peak scheme
  *   activates (2026-08-17 00:00 Beijing) and still needed for older usage.
@@ -30,11 +32,16 @@ export const MODEL_PRICES: Record<string, ModelPrice> = {
 export const PEAK_PRICES: Record<string, ModelPrice> = {
   'deepseek-v4-pro': { cacheHitPerM: 0.3, cacheMissPerM: 9, outputPerM: 27 },
   'deepseek-v4-flash': { cacheHitPerM: 0.1, cacheMissPerM: 3, outputPerM: 9 },
+  // Shipped 2026-08-21, same six numbers as deepseek-v4-flash. Absent from
+  // MODEL_PRICES on purpose: the model postdates the peak/off-peak switch,
+  // so no session can carry pre-2026-08-17 usage on it.
+  'deepseek-v4-flash-vision-exp': { cacheHitPerM: 0.1, cacheMissPerM: 3, outputPerM: 9 },
 }
 
 export const OFF_PEAK_PRICES: Record<string, ModelPrice> = {
   'deepseek-v4-pro': { cacheHitPerM: 0.15, cacheMissPerM: 4.5, outputPerM: 13.5 },
   'deepseek-v4-flash': { cacheHitPerM: 0.05, cacheMissPerM: 1.5, outputPerM: 4.5 },
+  'deepseek-v4-flash-vision-exp': { cacheHitPerM: 0.05, cacheMissPerM: 1.5, outputPerM: 4.5 },
 }
 
 /** Fallback model when a session's model is unknown. */
